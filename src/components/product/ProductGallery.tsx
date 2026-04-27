@@ -13,6 +13,7 @@ export default function ProductGallery({
   images,
 }: ProductGalleryProps) {
   const safeImages = useMemo(() => {
+    if (!Array.isArray(images)) return [];
     return images.filter((img) => typeof img === "string" && img.trim() !== "");
   }, [images]);
 
@@ -22,11 +23,11 @@ export default function ProductGallery({
   }, [safeImages]);
 
   const [selectedImage, setSelectedImage] = useState(
-    galleryImages[0] || safeImages[0] || ""
+    galleryImages[0] || safeImages[0] || "/placeholder.png"
   );
 
   useEffect(() => {
-    const nextImage = galleryImages[0] || safeImages[0] || "";
+    const nextImage = galleryImages[0] || safeImages[0] || "/placeholder.png";
     setSelectedImage(nextImage);
   }, [galleryImages, safeImages]);
 
@@ -42,8 +43,10 @@ export default function ProductGallery({
             width={1200}
             height={1200}
             priority
+            unoptimized
             sizes="(max-width: 639px) 100vw, (max-width: 1024px) 50vw, 520px"
             className="h-full w-auto max-h-full max-w-full object-contain"
+            onError={() => setSelectedImage("/placeholder.png")}
           />
         ) : null}
       </div>
@@ -72,6 +75,7 @@ export default function ProductGallery({
                     alt={`Ảnh chi tiết ${idx + 1} của ${name}`}
                     width={160}
                     height={160}
+                    unoptimized
                     sizes="(max-width: 639px) 56px, 78px"
                     className="h-full w-full object-contain"
                   />

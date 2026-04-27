@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -22,8 +23,14 @@ export default function ProductCard({ p }: { p: Product }) {
     { label: "Storage", value: p.specs?.storage },
   ].filter((item) => item.value);
 
-  const thumbnail =
-    p.images && p.images.length > 0 ? p.images[0] : "/placeholder.png";
+  const initialThumbnail =
+    Array.isArray(p.images) && p.images.length > 0
+      ? p.images[0]
+      : typeof p.images === "string"
+      ? p.images
+      : "/placeholder.png";
+
+  const [thumbnail, setThumbnail] = useState(initialThumbnail);
 
   return (
     <motion.div
@@ -37,9 +44,11 @@ export default function ProductCard({ p }: { p: Product }) {
             src={thumbnail}
             alt={p.name}
             fill
+            unoptimized
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
             className="object-contain p-2.5 transition-transform duration-300 group-hover:scale-105 sm:p-4"
             priority={false}
+            onError={() => setThumbnail("/placeholder.png")}
           />
 
           {hasDiscount && (
@@ -89,9 +98,9 @@ export default function ProductCard({ p }: { p: Product }) {
           )}
         </div>
 
-        <div className="mt-2 text-[11px] text-gray-500 sm:text-sm">
+        {/* <div className="mt-2 text-[11px] text-gray-500 sm:text-sm">
           Còn lại: <span className="font-medium text-black">{p.stock}</span>
-        </div>
+        </div> */}
       </div>
     </motion.div>
   );
